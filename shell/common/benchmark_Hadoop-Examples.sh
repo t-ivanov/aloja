@@ -5,7 +5,7 @@
 # we use the same jar for all executions of the same MR API version, to compare the same code
 BENCH_REQUIRED_FILES["Hadoop-Examples"]="$ALOJA_PUBLIC_HTTP/aplic2/tarballs/Hadoop-Examples.tar.gz"
 
-[ ! "$BENCH_LIST" ] && BENCH_LIST="wordcount terasort"
+[ ! "$BENCH_LIST" ] && BENCH_LIST="wordcount terasort sort"
 
 # Some benchmark specific validations
 [ ! "$BENCH_DATA_SIZE" ] && die "BENCH_DATA_SIZE is not set, cannot continue"
@@ -145,4 +145,23 @@ benchmark_teravalidate() {
   hadoop_delete_path "$bench_name" "$teravalidate_output_dir"
 
   execute_hadoop_new "$bench_name" "jar $examples_jar teravalidate $(get_hadoop_job_config) $teravalidate_input_dir $teravalidate_output_dir" "time"
+}
+
+# wrapper for sort
+benchmark_prepare_sort() {
+  benchmark_randomtextwriter
+}
+
+benchmark_sort() {
+  local bench_name="${FUNCNAME[0]##*benchmark_}"
+  logger "INFO: Running $bench_name"
+
+  logger "INFO: making sure $bench_output_dir dir is empty first"
+  hadoop_delete_path "$bench_name" "$bench_output_dir"
+
+  local extra_configs
+  extra_configs+=" -outKey org.apache.hadoop.io.Text"
+  extra_configs+=" -outValue org.apache.hadoop.io.Text"
+
+  execute_hadoop_new "$bench_name" "jar $examples_jar sort $(get_hadoop_job_config) $extra_configs $bench_input_dir $bench_output_dir" "time"
 }
