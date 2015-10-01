@@ -95,6 +95,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     default.vm.box = "npoggi/aloja-trusty64" #Aloja v2.x VM on Ubuntu 14.04
     default.vm.box_version = "2.3" #to force update version
 
+
     #for Virtualbox (Default)
     default.vm.provider 'virtualbox' do |v|
       v.name = defaultName
